@@ -1,9 +1,8 @@
-# Chatty &mdash; minimal chat API
+# Chatty &mdash; minimalistic chat service
 
 ## Requirements:
 - Redis for users-rooms cashing
 - Apache Kafka for messaging
-- gRPC for client-server interaction
 
 ## Scratch
 
@@ -119,8 +118,8 @@ var userData struct {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Change state to ONLINE and save redis id (offline mode)
-func reg(username string) {
-    userData.client = conn.Request(fmt.Sprintf("/reg?username=%v", username))
+func reg(userId string) {
+    userData.client = conn.Request(fmt.Sprintf("/reg?userId=%v", userId))
     userData.state = Online
 }
 

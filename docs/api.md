@@ -44,7 +44,7 @@ type Message struct {
 func SendMessage(msg Message, roomId string) bool
 
 // PickUpHistory
-//      action: Picks up all messages are sent after user entered the room
+//      action: Picks up all messages were sent after user entered the room
 //      return: History and success code
 func PickUpHistory(userId string) ([]Message, bool)
 ```

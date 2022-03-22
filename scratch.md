@@ -237,7 +237,6 @@ func enterHandler(userId, roomId string) Client {
 func leaveHandler(roomId, userId string) {
     usersRCB <- newRedisCmd("SET", userId, "0")
 
-    rdb.call("SELECT 1")
     roomsRCB <- newRedisCmd("DECR", roomId)
     if rCnt, _ := <-roomCnt; rCnt == 0 {
         roomsRCB <- newRedisCmd("DEL", roomId)
@@ -245,8 +244,8 @@ func leaveHandler(roomId, userId string) {
 }
 
 // /quit?userId=...
-func quitHandler(username string) {
-    usersRCB <- newRedisCmd("DEL", username)
+func quitHandler(userId string) {
+    usersRCB <- newRedisCmd("DEL", userId)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

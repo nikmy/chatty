@@ -106,6 +106,10 @@ func (rc *redisControl) UsersCount(roomId string) (int, error) {
 	return cnt, nil
 }
 
+func (rc *redisControl) CloseRoom(roomId string) error {
+	return rc.rooms.Del(roomId).Err()
+}
+
 func (rc *redisControl) Init() error {
 	err := rc.connectRedis()
 	rc.clearDatabases()

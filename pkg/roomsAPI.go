@@ -31,10 +31,16 @@ func EnterRoom(user ClientState, roomId string) (ClientState, error) {
 }
 
 func LeaveRoom(user ClientState) (ClientState, error) {
+	room := user.RoomId
 	if err := detail.WithRedis().LeaveRoom(user.UserId); err != nil {
 		return user, err
 	}
 	detail.WithKafka().LeaveRoom(&user)
+
+	if cnt, _ := UsersCount(room); cnt == 0 {
+		return user, CloseRoom(room)
+	}
+
 	return user, nil
 }
 
@@ -44,4 +50,11 @@ func UsersCount(roomId string) (int, error) {
 		return count, redisError
 	}
 	return count, nil
+}
+
+func CloseRoom(roomId string) error {
+	if err := detail.WithRedis().CloseRoom(roomId); err != nil {
+		return err
+	}
+	return detail.WithKafka().CloseRoom(roomId)
 }

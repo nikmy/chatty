@@ -58,6 +58,19 @@ func (kc *kafkaControl) LeaveRoom(user *ClientState) {
 	user.offset = 0
 }
 
+func (kc *kafkaControl) CloseRoom(roomId string) error {
+	conn, ok := kc.rooms[roomId]
+	if ok {
+		if err := conn.DeleteTopics(roomId); err != nil {
+			return err
+		}
+		if err := conn.Close(); err != nil {
+			return err
+		}
+	}
+	return errors.New("CloseRoom: kafka: no connection with room")
+}
+
 func (kc *kafkaControl) SendMessage(content []byte, user *ClientState) error {
 	if user.RoomId == "0" {
 		return errors.New("SendMessage: cannot send messages in wait room")

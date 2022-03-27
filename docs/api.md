@@ -7,23 +7,27 @@ package chatty
 
 // NewUser
 //      action: Creates user with desired ID and adds him to waiting room
-//      return: Success code
-func NewUser(userId string) bool
+//      return: Error if occur
+func NewUser(userId string) error
 
 // NewRoom
 //      action: Creates room and adds keyHolder to it
-//      return: New room ID and success code
-func NewRoom(keyHolderId string) (string, bool)
+//      return: New room ID and error if occur
+func NewRoom(keyHolderId string) (string, error)
 
 // EnterRoom
 //      action: Moves user from waiting room to desired room
-//      return: Success code
-func EnterRoom(userId, roomId string) bool
+//      return: Error if occur
+func EnterRoom(userId, roomId string) error
 
 // LeaveRoom
 //      action: Moves user from his current room to waiting room 
-//      return: Success code
-func LeaveRoom(userId string) bool
+//      return: Error if occur
+func LeaveRoom(userId string) error
+
+// UsersCount
+//      return: Number of users in the room with given roomId, or (0, error)
+func UsersCount(roomId string) (int, error)
 ```
 
 ## Messenger API
@@ -55,9 +59,9 @@ func PickUpHistory(userId string) ([]Message, bool)
 package chatty
 
 // Init
-//      action: Launch chatty service, redis and kafka
+//      action: Launch chatty service, connected with redis and kafka
 //      return: Success code and error
-func Init() (bool, error)
+func Init(redisURL, kafkaURL string) (bool, error)
 
 // Finalize
 //      action: Shutdown all services

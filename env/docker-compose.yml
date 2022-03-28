@@ -4,6 +4,9 @@ services:
     image: redis
     ports:
       - "6379:6379"
+    container_name: chatty_redis
+    networks:
+      - chatty_network
   kafka:
     image: wurstmeister/kafka:latest
     ports:
@@ -15,7 +18,16 @@ services:
       KAFKA_CREATE_TOPIC_ENABLE: "true"
     depends_on:
       - zookeeper
+    container_name: chatty_kafka
+    networks:
+      - chatty_network
   zookeeper:
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
+    container_name: chatty_zookeeper
+    networks:
+      - chatty_network
+
+networks:
+  chatty_network:

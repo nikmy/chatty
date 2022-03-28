@@ -3,8 +3,10 @@ test:
 	@docker-compose -f ./env/docker-compose.yml up --build -d
 	@echo "////////////////////////////////////////////////////////////////////////////////"
 	@sleep 5s
-	@echo "\nRun unit tests:\n"
-	@go test -failfast -timeout 10s -v ./tests/unit_test.go
+	@echo "\nRun API tests:\n"
+	@go test ./tests -failfast -timeout 3s -v -run 'API'
+	@echo "\nRun stress tests:\n"
+	@go test ./tests -failfast -timeout 60s -v -run 'Stress'
 	@echo "\n////////////////////////////////////////////////////////////////////////////////"
 	@docker-compose -f ./env/docker-compose.yml down
 	@echo "////////////////////////////////////////////////////////////////////////////////"

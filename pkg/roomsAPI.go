@@ -18,8 +18,8 @@ func NewRoom(keyHolder ClientState) (ClientState, error) {
 	if redisError != nil {
 		return ClientState{}, redisError
 	}
-	detail.WithKafka().EnterRoom(&keyHolder, room)
-	return keyHolder, nil
+	kafkaError := detail.WithKafka().EnterRoom(&keyHolder, room)
+	return keyHolder, kafkaError
 }
 
 func EnterRoom(user ClientState, roomId string) (ClientState, error) {

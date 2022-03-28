@@ -10,8 +10,9 @@ func SendMessage(content []byte, user ClientState) error {
 	return detail.WithKafka().SendMessage(content, &user)
 }
 
-func PickUpHistory(user ClientState) ([]Message, error) {
-	return detail.WithKafka().PickUpHistory(&user)
+func PickUpHistory(user ClientState) (ClientState, []Message, error) {
+	h, e := detail.WithKafka().PickUpHistory(&user)
+	return user, h, e
 }
 
 func DumpHistory(user ClientState) ([]Message, error) {

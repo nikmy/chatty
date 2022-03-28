@@ -48,7 +48,7 @@ func (kc *kafkaControl) EnterRoom(user *ClientState, roomId string) error {
 		kc.rooms[roomId] = newRoom
 	}
 
-	user.offset = 0
+	user.offset, _ = kc.rooms[roomId].ReadLastOffset()
 	user.RoomId = roomId
 	return nil
 }
@@ -88,17 +88,18 @@ func (kc *kafkaControl) SendMessage(content []byte, user *ClientState) error {
 }
 
 func (kc *kafkaControl) PickUpHistory(user *ClientState) ([]Message, error) {
-	r := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:   []string{":9092"},
-		Topic:     user.RoomId,
-		Partition: 0,
-		MinBytes:  1 << 10,
-		MaxBytes:  1 << 20,
-	})
-	_ = r.SetOffset(user.offset)
+	conn, err := kafka.DialLeader(kafkaCtx, "tcp", ":9092", user.RoomId, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = conn.Seek(user.offset, kafka.SeekStart)
+	if err != nil {
+		return nil, err
+	}
 
 	defer func() {
-		_ = r.Close()
+		_ = conn.Close()
 	}()
 
 	last, _ := kc.rooms[user.RoomId].ReadLastOffset()
@@ -110,7 +111,7 @@ func (kc *kafkaControl) PickUpHistory(user *ClientState) ([]Message, error) {
 	}
 
 	for {
-		m, err := kc.rooms[user.RoomId].ReadMessage(1 << 20)
+		m, err := conn.ReadMessage(1 << 20)
 		if err == io.EOF {
 			break
 		}

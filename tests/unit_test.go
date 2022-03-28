@@ -11,6 +11,34 @@ func assertUsersCount(t *testing.T, roomId string, expectedCnt int) {
 	}
 }
 
+func checkHistory(t *testing.T, actual []chatty.Message, expected []string) {
+	actualStr := make([]string, 0)
+	for _, m := range actual {
+		actualStr = append(actualStr, string(m.Content))
+	}
+	errWrongHistory := func() {
+		t.Fatalf("Wrong history:\n[INFO]\tExpected: %v\n[INFO]\tGot: %v", expected, actualStr)
+	}
+
+	if len(actual) != len(expected) {
+		errWrongHistory()
+	}
+	for i, m := range actual {
+		if string(m.Content) != expected[i] {
+			errWrongHistory()
+		}
+	}
+}
+
+func sendMessages(t *testing.T, sender *chatty.ClientState, mStr []string) {
+	for _, m := range mStr {
+		err := chatty.SendMessage([]byte(m), *sender)
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+	}
+}
+
 func TestRoomsAPI(t *testing.T) {
 	emptiness := "0"
 
@@ -69,48 +97,43 @@ func TestRoomsAPI(t *testing.T) {
 	}
 }
 
-func checkHistory(t *testing.T, actual []chatty.Message, expected []string) {
-	actualStr := make([]string, 0)
-	for _, m := range actual {
-		actualStr = append(actualStr, string(m.Content))
-	}
-	errWrongHistory := func() {
-		t.Fatalf("Wrong history:\n[INFO]\tExpected: %v\n[INFO]\tGot: %v", expected, actualStr)
-	}
-
-	if len(actual) != len(expected) {
-		errWrongHistory()
-	}
-	for i, m := range actual {
-		if string(m.Content) != expected[i] {
-			errWrongHistory()
-		}
-	}
-}
-
-func sendMessages(t *testing.T, sender *chatty.ClientState, mStr []string) {
-	for _, m := range mStr {
-		err := chatty.SendMessage([]byte(m), *sender)
-		if err != nil {
-			t.Fatal(err.Error())
-		}
-	}
-}
-
 func TestMessageAPI(t *testing.T) {
 	err := chatty.Init()
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	tester, _ := chatty.NewUser("tester")
-	tester, _ = chatty.NewRoom(tester)
+	first, _ := chatty.NewUser("first")
+	first, _ = chatty.NewRoom(first)
 
-	exp := []string{"hi!", "how r u?", "fine!"}
+	exp := []string{"am i alone?", "bla bla bla"}
+	sendMessages(t, &first, exp)
 
-	sendMessages(t, &tester, exp)
+	act, _ := chatty.DumpHistory(first)
+	checkHistory(t, act, exp)
 
-	act, err := chatty.DumpHistory(tester)
+	second, _ := chatty.NewUser("second")
+	second, _ = chatty.EnterRoom(second, first.RoomId)
+
+	exp = []string{"hi!", "how are you?"}
+	sendMessages(t, &first, exp)
+
+	second, act, _ = chatty.PickUpHistory(second)
+	checkHistory(t, act, exp)
+
+	ans := []string{"fine, thx!"}
+	sendMessages(t, &second, ans)
+
+	first, act, _ = chatty.PickUpHistory(second)
+	checkHistory(t, act, ans)
+
+	exp = append([]string{"am i alone?", "bla bla bla"}, exp...)
+	exp = append(exp, ans...)
+
+	act, _ = chatty.DumpHistory(first)
+	checkHistory(t, act, exp)
+
+	act, _ = chatty.DumpHistory(second)
 	checkHistory(t, act, exp)
 
 	err = chatty.Finalize()

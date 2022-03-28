@@ -61,8 +61,8 @@ func SendMessage(content []byte, user ClientState) error
 
 // PickUpHistory
 //      action: Picks up all messages were sent after user entered the room
-//      return: History and error
-func PickUpHistory(user ClientState) ([]Message, error)
+//      return: Updated state, user history diff and error
+func PickUpHistory(user ClientState) (ClientState, []Message, error)
 
 // DumpHistory
 //      action: Dumps all messages were sent to the room

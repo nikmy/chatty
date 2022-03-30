@@ -48,8 +48,8 @@ func UsersFactory() *usersFactory {
 	return mockFactory
 }
 
-func (*usersFactory) SpawnUsers(n int) ([]MockUser, error) {
-	first, err := chatty.NewUser("0")
+func (*usersFactory) SpawnUsers(offset, n int) ([]MockUser, error) {
+	first, err := chatty.NewUser(strconv.Itoa(offset))
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (*usersFactory) SpawnUsers(n int) ([]MockUser, error) {
 	room := first.RoomId
 
 	for i := 1; i < n; i++ {
-		u, err := chatty.NewUser(strconv.Itoa(i))
+		u, err := chatty.NewUser(strconv.Itoa(i + offset))
 		if err != nil {
 			return nil, err
 		}

@@ -5,8 +5,10 @@ test:
 	@sleep 5s
 	@echo "\nRun API tests:\n"
 	@go test ./tests -failfast -timeout 3s -v -run 'API'
-	@echo "\nRun stress tests:\n"
-	@go test ./tests -failfast -timeout 60s -v -run 'Stress'
+	@echo "\nRun single-room stress tests:\n"
+	@go test ./tests -failfast -timeout 60s -v -run 'Users'
+	@echo "\nRun many-rooms stress tests:\n"
+	@go test ./tests -failfast -timeout 60s -v -run 'ManyRooms'
 	@echo "\n////////////////////////////////////////////////////////////////////////////////"
 	@docker-compose -f ./env/docker-compose.yml down
 	@echo "////////////////////////////////////////////////////////////////////////////////"

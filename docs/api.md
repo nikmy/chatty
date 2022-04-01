@@ -19,17 +19,17 @@ func NewUser(userId string) (ClientState, error)
 // NewRoom
 //      action: Creates room and adds keyHolder to it
 //      return: Updated user state and error
-func NewRoom(keyHolderId string) (ClientState, error)
+func NewRoom(keyHolder ClientState) (ClientState, error)
 
 // EnterRoom
 //      action: Moves user from waiting room to desired room
 //      return: Updated user state and error
-func EnterRoom(userId, roomId string) (ClientState, error)
+func EnterRoom(user ClientState, roomId string) (ClientState, error)
 
 // LeaveRoom
 //      action: Moves user from his current room to waiting room 
 //      return: Updated user state and error
-func LeaveRoom(userId string) (ClientState, error)
+func LeaveRoom(user *ClientState) (ClientState, error)
 
 // UsersCount
 //      return: Number of users in the room with given roomId, or (0, error)

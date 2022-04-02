@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"net/rpc"
+	"net/rpc/jsonrpc"
 )
 
 type Chatty struct{}
@@ -69,7 +70,7 @@ func main() {
 		return
 	}
 
-	t, err := net.ResolveTCPAddr("tcp", PORT)
+	t, err := net.ResolveTCPAddr("tcp", ":"+PORT)
 	if err != nil {
 		log.Println(err.Error())
 		return
@@ -87,6 +88,6 @@ func main() {
 			continue
 		}
 		log.Printf("Connected to %s", c.RemoteAddr())
-		rpc.ServeConn(c)
+		go jsonrpc.ServeConn(c)
 	}
 }

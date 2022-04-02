@@ -1,14 +1,2 @@
 test:
-	@echo "////////////////////////////////////////////////////////////////////////////////"
-	@docker-compose -f ./env/docker-compose.yml up --build -d
-	@echo "////////////////////////////////////////////////////////////////////////////////"
-	@sleep 5s
-	@echo "\nRun API tests:\n"
-	@go test ./tests -failfast -timeout 3s -v -run 'API'
-	@echo "\nRun single-room stress tests:\n"
-	@go test ./tests -failfast -timeout 60s -v -run 'Users'
-	@echo "\nRun many-rooms stress tests:\n"
-	@go test ./tests -failfast -timeout 60s -v -run 'ManyRooms'
-	@echo "\n////////////////////////////////////////////////////////////////////////////////"
-	@docker-compose -f ./env/docker-compose.yml down
-	@echo "////////////////////////////////////////////////////////////////////////////////"
+	@sh -c ./scripts/pkg_test.sh

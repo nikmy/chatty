@@ -71,18 +71,17 @@ func (kc *kafkaControl) CloseRoom(roomId string) error {
 	return errors.New("CloseRoom: kafka: no connection with room")
 }
 
-func (kc *kafkaControl) SendMessage(content []byte, user *ClientState) error {
-	if user.RoomId == "0" {
+func (kc *kafkaControl) SendMessage(msg Message) error {
+	if msg.Room == "0" {
 		return errors.New("SendMessage: cannot send messages in wait room")
 	}
 
-	conn, ok := kc.rooms[user.RoomId]
+	conn, ok := kc.rooms[msg.Room]
 	if !ok {
 		return errors.New("SendMessage: room does not exist")
 	}
 
-	m := newMessage(user, content)
-	_, err := conn.WriteMessages(m.toKafka())
+	_, err := conn.WriteMessages(msg.toKafka())
 
 	return err
 }

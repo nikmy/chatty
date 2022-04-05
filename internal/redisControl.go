@@ -49,8 +49,14 @@ func (rc *redisControl) NewUser(userId string) error {
 func (rc *redisControl) NewRoom(keyHolderId string) (string, error) {
 	rc.nextFreeRoom++
 	roomId := strconv.FormatUint(rc.nextFreeRoom, 10)
-	rc.rooms.Set(roomId, 0, 0)
-	return roomId, rc.EnterRoom(keyHolderId, roomId)
+	if err := rc.rooms.Set(roomId, 0, 0).Err(); err != nil {
+		return "0", err
+	}
+	if err := rc.EnterRoom(keyHolderId, roomId); err != nil {
+		rc.rooms.Del(roomId)
+		return "0", err
+	}
+	return roomId, nil
 }
 
 func (rc *redisControl) EnterRoom(userId, roomId string) error {
@@ -71,15 +77,18 @@ func (rc *redisControl) EnterRoom(userId, roomId string) error {
 
 	err = rc.rooms.Incr(roomId).Err()
 	if err != nil {
+		rc.users.Set(userId, currentRoom, 0)
 		return err
 	}
 
 	cnt, err := rc.rooms.Decr(currentRoom).Result()
 	if err != nil {
+		rc.rooms.Decr(roomId)
+		rc.users.Set(userId, currentRoom, 0)
 		return err
 	}
 	if currentRoom != "0" && cnt == 0 {
-		return rc.rooms.Del(roomId).Err()
+		return rc.rooms.Del(currentRoom).Err()
 	}
 
 	return nil
@@ -95,6 +104,9 @@ func (rc *redisControl) LeaveRoom(userId string) error {
 		return rc.EnterRoom(userId, "0")
 	}
 
+	if err := rc.rooms.Decr("0").Err(); err != nil {
+		return err
+	}
 	return rc.users.Del(userId).Err()
 }
 
@@ -104,10 +116,6 @@ func (rc *redisControl) UsersCount(roomId string) (int, error) {
 		return 0, err
 	}
 	return cnt, nil
-}
-
-func (rc *redisControl) CloseRoom(roomId string) error {
-	return rc.rooms.Del(roomId).Err()
 }
 
 func (rc *redisControl) Init() error {

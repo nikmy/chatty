@@ -82,20 +82,21 @@ func ConnCLI(r *bufio.Reader) {
 	}
 
 	defer func() {
-		err = remote.Close()
-		if err != nil {
-			panic(err)
-		}
+		_ = remote.Close()
 	}()
 
 	if err = remote.Call("Chatty.NewUser", username, &STATE.User); err != nil {
-		fmt.Printf("\n[ERROR] RPC Error\n%s\n", err.Error())
+		fmt.Printf("\t[ERROR] RPC Error: %s\n\n", err.Error())
 		return
 	}
 
-	var cmd string
-	fmt.Println()
+	defer func() {
+		_ = remote.Call("Chatty.LeaveRoom", STATE.User, &STATE.User)
+	}()
 
+	fmt.Printf("\t[INFO] Successfully connected to %s\n\n", STATE.Addr)
+
+	var cmd string
 	for {
 		fmt.Printf("chatty@<%s>$ ", STATE.Addr)
 		cmd, err = r.ReadString('\n')
@@ -103,6 +104,10 @@ func ConnCLI(r *bufio.Reader) {
 
 		if err != nil {
 			fmt.Print("\n[ERROR] Input error\n\n")
+			continue
+		}
+
+		if cmd == "" {
 			continue
 		}
 
@@ -123,7 +128,7 @@ func ConnCLI(r *bufio.Reader) {
 
 			err = remote.Call("Chatty.EnterRoom", newState.User, &STATE.User)
 			if err != nil {
-				fmt.Printf("\n[ERROR] RPC Error\n%s\n", err.Error())
+				fmt.Printf("\t[ERROR] RPC Error: %s\n\n", err.Error())
 				continue
 			}
 			ChatCLI(r, remote)
@@ -131,9 +136,10 @@ func ConnCLI(r *bufio.Reader) {
 		case "chat":
 			err = remote.Call("Chatty.NewRoom", STATE.User, &STATE.User)
 			if err != nil {
-				fmt.Printf("\n[ERROR] RPC Error:\n%s\n", err.Error())
+				fmt.Printf("\t[ERROR] RPC Error: %s\n\n", err.Error())
 				continue
 			}
+			fmt.Println()
 			ChatCLI(r, remote)
 		case "help":
 			fmt.Print(CONN_MANUAL)
@@ -144,7 +150,7 @@ func ConnCLI(r *bufio.Reader) {
 }
 
 func ChatCLI(r *bufio.Reader, remote *rpc.Client) {
-	fmt.Printf("\n\t[INFO] You are now in chat with id: %s\n\n", STATE.User.RoomId)
+	fmt.Printf("\t[INFO] You are now in chat with id: %s\n\n", STATE.User.RoomId)
 	defer func() {
 		_ = remote.Call("Chatty.LeaveRoom", STATE.User, &STATE.User)
 	}()
@@ -159,6 +165,10 @@ func ChatCLI(r *bufio.Reader, remote *rpc.Client) {
 
 		if err != nil {
 			fmt.Print("\n[ERROR] Input error\n\n")
+			continue
+		}
+
+		if cmd == "" {
 			continue
 		}
 

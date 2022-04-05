@@ -32,7 +32,11 @@ func checkHistory(t *testing.T, actual []chatty.Message, expected []string) {
 
 func sendMessages(t *testing.T, sender *chatty.ClientState, mStr []string) {
 	for _, m := range mStr {
-		err := chatty.SendMessage([]byte(m), *sender)
+		err := chatty.SendMessage(chatty.Message{
+			Content: []byte(m),
+			Author:  sender.UserId,
+			Room:    sender.RoomId,
+		})
 		if err != nil {
 			t.Fatal(err.Error())
 		}

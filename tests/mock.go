@@ -12,7 +12,11 @@ type MockUser struct {
 }
 
 func (u *MockUser) SendMsg(text string) error {
-	return chatty.SendMessage([]byte(text), u.state)
+	return chatty.SendMessage(chatty.Message{
+		Content: []byte(text),
+		Author:  u.state.UserId,
+		Room:    u.state.RoomId,
+	})
 }
 
 func (u *MockUser) UpdateHistory() ([]chatty.Message, error) {

@@ -12,14 +12,6 @@ type Message struct {
 	Room      string
 }
 
-func newMessage(user *ClientState, content []byte) Message {
-	return Message{
-		Content: content,
-		Author:  user.UserId,
-		Room:    user.RoomId,
-	}
-}
-
 func (m *Message) toKafka() kafka.Message {
 	return kafka.Message{
 		Key:   []byte(m.Author),

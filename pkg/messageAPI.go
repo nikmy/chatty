@@ -6,8 +6,8 @@ import (
 
 type Message = detail.Message
 
-func SendMessage(content []byte, user ClientState) error {
-	return detail.WithKafka().SendMessage(content, &user)
+func SendMessage(msg Message) error {
+	return detail.WithKafka().SendMessage(msg)
 }
 
 func PickUpHistory(user ClientState) (ClientState, []Message, error) {

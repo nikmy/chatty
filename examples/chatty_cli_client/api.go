@@ -6,11 +6,6 @@ import (
 	"net/rpc"
 )
 
-type UserMessage struct {
-	User    chatty.ClientState
-	Content []byte
-}
-
 func SendMessage(remote *rpc.Client) {
 	var msg string
 	fmt.Print("\nWrite one-line message, press Enter to send:\n\n> ")
@@ -24,12 +19,20 @@ func SendMessage(remote *rpc.Client) {
 		return
 	}
 
-	err := remote.Call("Chatty.SendMessage", UserMessage{
-		User:    STATE.User,
+	var sent bool
+	err := remote.Call("Chatty.SendMessage", chatty.Message{
 		Content: []byte(msg),
-	}, &STATE.User)
+		Author:  STATE.User.UserId,
+		Room:    STATE.User.RoomId,
+	}, &sent)
 
 	if err != nil {
-		fmt.Printf("\n[ERROR] RPC Error\n%s\n", err.Error())
+		fmt.Printf("\n[ERROR] RPC Error: %s\n\n", err.Error())
+	}
+
+	if sent {
+		fmt.Print("\n[INFO] Message was delivered\n\n")
+	} else {
+		fmt.Print("\n[ERROR] Failed to send message\n\n")
 	}
 }

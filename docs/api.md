@@ -32,13 +32,9 @@ func EnterRoom(user ClientState, roomId string) (ClientState, error)
 func LeaveRoom(user *ClientState) (ClientState, error)
 
 // UsersCount
+//      purpose: Debug / testing / log
 //      return: Number of users in the room with given roomId, or (0, error)
 func UsersCount(roomId string) (int, error)
-
-// CloseRoom
-//      unsafe: Make sure that all users in the room have been notified about room closing
-//      action: Delete room topic from kafka and close connection for sending messages, remove room from redis DB
-func CloseRoom(roomId string) error
 ```
 
 ## Message API

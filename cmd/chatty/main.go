@@ -33,14 +33,10 @@ func (*Chatty) LeaveRoom(user chatty.ClientState, reply *chatty.ClientState) (er
 	return
 }
 
-type UserMessage struct {
-	User    chatty.ClientState
-	Content []byte
-}
-
-func (*Chatty) SendMessage(msg UserMessage, reply *error) error {
-	*reply = chatty.SendMessage(msg.Content, msg.User)
-	return *reply
+func (*Chatty) SendMessage(msg chatty.Message, reply *bool) (err error) {
+	err = chatty.SendMessage(msg)
+	*reply = err == nil
+	return
 }
 
 type UserHistory struct {

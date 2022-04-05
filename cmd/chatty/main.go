@@ -39,17 +39,12 @@ func (*Chatty) SendMessage(msg chatty.Message, reply *bool) (err error) {
 	return
 }
 
-type UserHistory struct {
-	User    chatty.ClientState
-	History []chatty.Message
-}
-
-func (*Chatty) PickUpHistory(user chatty.ClientState, reply *UserHistory) (err error) {
+func (*Chatty) PickUpHistory(user chatty.ClientState, reply *chatty.UserHistory) (err error) {
 	reply.User, reply.History, err = chatty.PickUpHistory(user)
 	return
 }
 
-func (*Chatty) DumpHistory(user chatty.ClientState, reply *UserHistory) (err error) {
+func (*Chatty) DumpHistory(user chatty.ClientState, reply *chatty.UserHistory) (err error) {
 	reply.History, err = chatty.DumpHistory(user)
 	reply.User = user
 	return

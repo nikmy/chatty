@@ -6,6 +6,11 @@ import (
 
 type Message = detail.Message
 
+type UserHistory struct {
+	User    ClientState
+	History []Message
+}
+
 func SendMessage(msg Message) error {
 	return detail.WithKafka().SendMessage(msg)
 }

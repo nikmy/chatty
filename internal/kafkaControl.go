@@ -8,7 +8,7 @@ import (
 )
 
 type ClientState struct {
-	offset int64
+	Offset int64
 	UserId string
 	RoomId string
 }
@@ -33,7 +33,7 @@ func WithKafka() *kafkaControl {
 
 func (kc *kafkaControl) NewUser(userId string) ClientState {
 	return ClientState{
-		offset: 0,
+		Offset: 0,
 		UserId: userId,
 		RoomId: "0",
 	}
@@ -48,14 +48,14 @@ func (kc *kafkaControl) EnterRoom(user *ClientState, roomId string) error {
 		kc.rooms[roomId] = newRoom
 	}
 
-	user.offset, _ = kc.rooms[roomId].ReadLastOffset()
+	user.Offset, _ = kc.rooms[roomId].ReadLastOffset()
 	user.RoomId = roomId
 	return nil
 }
 
 func (kc *kafkaControl) LeaveRoom(user *ClientState) {
 	user.RoomId = "0"
-	user.offset = 0
+	user.Offset = 0
 }
 
 func (kc *kafkaControl) CloseRoom(roomId string) error {
@@ -92,7 +92,7 @@ func (kc *kafkaControl) PickUpHistory(user *ClientState) ([]Message, error) {
 		return nil, err
 	}
 
-	_, err = conn.Seek(user.offset, kafka.SeekStart)
+	_, err = conn.Seek(user.Offset, kafka.SeekStart)
 	if err != nil {
 		return nil, err
 	}
@@ -104,8 +104,8 @@ func (kc *kafkaControl) PickUpHistory(user *ClientState) ([]Message, error) {
 	last, _ := kc.rooms[user.RoomId].ReadLastOffset()
 	history, buff := make([]Message, 0), Message{}
 
-	if last <= user.offset {
-		user.offset = last
+	if last <= user.Offset {
+		user.Offset = last
 		return []Message{}, nil
 	}
 
@@ -126,12 +126,12 @@ func (kc *kafkaControl) PickUpHistory(user *ClientState) ([]Message, error) {
 		}
 	}
 
-	user.offset = last
+	user.Offset = last
 	return history, nil
 }
 
 func (kc *kafkaControl) DumpHistory(user *ClientState) ([]Message, error) {
-	user.offset = 0
+	user.Offset = 0
 	return kc.PickUpHistory(user)
 }
 

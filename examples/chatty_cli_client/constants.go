@@ -5,7 +5,6 @@ import (
 	"os/exec"
 )
 
-//goland:noinspection ALL
 const (
 	HELLO_MESSAGE string = "\n\n" +
 		"\n $$$$$$\\  $$\\                  $$\\     $$\\               \n" +
@@ -41,8 +40,8 @@ const (
 		"\tleave\n\t\tLeave the chat\n" + BORDER
 )
 
-//goland:noinspection ALL
 var CLEAR_FUNC map[string]func()
+var HISTORY_FILENAME = ".chatty_history.txt"
 
 func init() {
 	CLEAR_FUNC = make(map[string]func())

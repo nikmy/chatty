@@ -176,11 +176,11 @@ func ChatCLI(r *bufio.Reader, remote *rpc.Client) {
 		case "leave":
 			return
 		case "send":
-			SendMessage(remote)
+			SendMessage(r, remote)
 		case "update":
-			// TODO
+			UpdateHistory(remote)
 		case "save":
-			// TODO
+			DumpHistory(remote)
 		case "help":
 			fmt.Print(CHAT_MANUAL)
 		default:

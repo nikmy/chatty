@@ -75,7 +75,7 @@ func saveHistory(history []chatty.Message, filename string, rewrite bool) {
 		flags |= os.O_APPEND
 	}
 
-	file, err := os.OpenFile(filename, flags, 0777)
+	file, err := os.OpenFile(filename, flags, 0666)
 	if err != nil {
 		fmt.Printf("\n[ERROR] Cannot open (create) file %s: %s\n\n", filename, err.Error())
 	}

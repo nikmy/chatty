@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	chatty "github.com/nikmy/chatty/pkg"
-	"log"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
+	"os/signal"
+	"syscall"
 )
 
 type Chatty struct{}
@@ -57,28 +59,38 @@ func main() {
 	chattyService := new(Chatty)
 	err := rpc.Register(chattyService)
 	if err != nil {
-		log.Println(err.Error())
+		Logger.Println(err.Error())
 		return
 	}
 
 	t, err := net.ResolveTCPAddr("tcp", ":"+PORT)
 	if err != nil {
-		log.Println(err.Error())
+		Logger.Println(err.Error())
 		return
 	}
 
 	l, err := net.ListenTCP("tcp", t)
 	if err != nil {
-		log.Println(err.Error())
+		Logger.Println(err.Error())
 		return
 	}
 
-	for {
-		c, err := l.Accept()
-		if err != nil {
-			continue
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT)
+	defer stop()
+
+	Logger.Printf("Listening at port %s", PORT)
+
+	go func() {
+		for {
+			c, err := l.Accept()
+			if err != nil {
+				continue
+			}
+			Logger.Printf("New client: %s", c.RemoteAddr())
+			go jsonrpc.ServeConn(c)
 		}
-		log.Printf("Connected to %s", c.RemoteAddr())
-		go jsonrpc.ServeConn(c)
-	}
+	}()
+
+	<-ctx.Done()
+	Logger.Println("Graceful shutdown")
 }

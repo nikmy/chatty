@@ -1,2 +1,8 @@
+env:
+	@./scripts/run.sh
+
+down:
+	@./scripts/stop.sh
+
 test:
-	@sh -c ./scripts/pkg_test.sh
+	@./scripts/pkg_test.sh

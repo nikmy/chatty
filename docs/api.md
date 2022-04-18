@@ -72,7 +72,7 @@ func DumpHistory(user ClientState) ([]Message, error)
 package chatty
 
 // Init
-//      action: Launch chatty service, connected with redis and kafka
+//      action: Launch rpc_server service, connected with redis and kafka
 //      return: Error
 func Init(redisURL, kafkaURL string) error
 

@@ -28,3 +28,8 @@ go run ./cmd/rpc_cli_client
 
 ## Executables
 Now there are executables for `windows amd64` in exe directory
+
+## Docker Compose
+
+You can just download file [build/docker-compose/yml](https://github.com/nikmy/chatty/blob/main/build/docker-compose.yml),
+and run `docker-compose up`. It will launch all services, and chatty RPC will be available from `localhost:8080`.

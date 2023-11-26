@@ -2,9 +2,10 @@ package main
 
 import (
 	"flag"
-	chatty "github.com/nikmy/chatty/pkg"
 	"log"
 	"os"
+
+	chatty "github.com/nikmy/chatty/pkg"
 )
 
 var HELP bool
@@ -36,8 +37,8 @@ func Setup() {
 	}
 	Logger = log.New(logfile, "", log.Ldate|log.Ltime)
 
-	if chatty.Init() != nil {
-		Logger.Fatal("Cannot initialize chatty")
+	if err := chatty.Init(); err != nil {
+		Logger.Fatalf("cannot initialize chatty: %s", err)
 	}
 }
 

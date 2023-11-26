@@ -2,8 +2,9 @@ package detail
 
 import (
 	"errors"
-	"github.com/go-redis/redis"
 	"strconv"
+
+	"github.com/go-redis/redis"
 )
 
 type redisControl struct {

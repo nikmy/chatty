@@ -1,5 +1,12 @@
-version: '3.7'
+version: '3.9'
 services:
+  chatty:
+    image: myink/chatty:v1.0.0
+    container_name: chatty_service
+    network_mode: "host"
+    depends_on:
+      - redis
+      - kafka
   redis:
     image: redis
     ports:

@@ -3,12 +3,13 @@ package main
 import (
 	"bufio"
 	"fmt"
-	chatty "github.com/nikmy/chatty/pkg"
 	"net/rpc"
 	"net/rpc/jsonrpc"
 	"os"
 	"runtime"
 	"strings"
+
+	chatty "github.com/nikmy/chatty/pkg"
 )
 
 func main() {

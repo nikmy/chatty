@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
-	chatty "github.com/nikmy/chatty/pkg"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
 	"os/signal"
 	"syscall"
+	"time"
+
+	chatty "github.com/nikmy/chatty/pkg"
 )
 
 type Chatty struct{}
@@ -53,6 +55,7 @@ func (*Chatty) DumpHistory(user chatty.ClientState, reply *chatty.UserHistory) (
 }
 
 func main() {
+	time.Sleep(time.Second * 10)
 	Setup()
 	defer Finalize()
 
@@ -74,6 +77,7 @@ func main() {
 		Logger.Println(err.Error())
 		return
 	}
+	defer l.Close()
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT)
 	defer stop()

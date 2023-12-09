@@ -1,0 +1,10 @@
+- name: Copy application files to the server
+  copy:
+    src: "{{ playbook_dir }}/.."
+    dest: "/opt/app"
+
+- name: Build Docker image
+  docker_image:
+    name: myink/chatty:v1.0.0
+    path: "/opt/app"
+    state: present

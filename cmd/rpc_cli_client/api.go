@@ -3,9 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
-	chatty "github.com/nikmy/chatty/pkg"
 	"net/rpc"
 	"os"
+
+	chatty "github.com/nikmy/chatty/pkg"
 )
 
 func SendMessage(r *bufio.Reader, remote *rpc.Client) {

@@ -1,0 +1,9 @@
+- name: Copy Docker Compose file to the server
+  copy:
+    src: "{{ playbook_dir }}/../build"
+    dest: "/opt/app/docker-compose.yml"
+
+- name: Start Docker containers
+  command: "docker-compose up -d"
+  args:
+    chdir: "/opt/app"

@@ -5,4 +5,4 @@ down:
 	@./scripts/stop.sh
 
 test:
-	@./scripts/pkg_test.sh
+	@./scripts/pkg_test.sh	

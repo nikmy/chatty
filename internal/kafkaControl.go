@@ -3,9 +3,12 @@ package detail
 import (
 	"context"
 	"errors"
-	"github.com/segmentio/kafka-go"
 	"io"
+
+	"github.com/segmentio/kafka-go"
 )
+
+const kafkaURL = ":9092"
 
 type ClientState struct {
 	Offset int64
@@ -41,7 +44,7 @@ func (kc *kafkaControl) NewUser(userId string) ClientState {
 
 func (kc *kafkaControl) EnterRoom(user *ClientState, roomId string) error {
 	if _, ok := kc.rooms[roomId]; !ok {
-		newRoom, err := kafka.DialLeader(kafkaCtx, "tcp", ":9092", roomId, 0)
+		newRoom, err := kafka.DialLeader(kafkaCtx, "tcp", kafkaURL, roomId, 0)
 		if err != nil {
 			return err
 		}
@@ -87,7 +90,7 @@ func (kc *kafkaControl) SendMessage(msg Message) error {
 }
 
 func (kc *kafkaControl) PickUpHistory(user *ClientState) ([]Message, error) {
-	conn, err := kafka.DialLeader(kafkaCtx, "tcp", ":9092", user.RoomId, 0)
+	conn, err := kafka.DialLeader(kafkaCtx, "tcp", kafkaURL, user.RoomId, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +143,7 @@ func (kc *kafkaControl) Init() error {
 		return errors.New("kafka controller has been already initialized")
 	}
 
-	waitRoom, err := kafka.DialLeader(kafkaCtx, "tcp", ":9092", "0", 0)
+	waitRoom, err := kafka.DialLeader(kafkaCtx, "tcp", kafkaURL, "0", 0)
 	if err != nil {
 		return err
 	}
